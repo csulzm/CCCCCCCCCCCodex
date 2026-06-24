@@ -1,9 +1,18 @@
 from pathlib import Path
+import argparse
 import re, textwrap
 
 ROOT = Path(__file__).resolve().parents[1]
-md_path = ROOT / 'reports' / 'zhihu_hot_top10_2026-06-23.md'
-pdf_path = ROOT / 'reports' / 'zhihu_hot_top10_2026-06-23.pdf'
+parser = argparse.ArgumentParser(description='Generate a Chinese PDF report from a Zhihu hot-list Markdown file.')
+parser.add_argument('markdown', nargs='?', default=str(ROOT / 'reports' / 'zhihu_hot_top10_2026-06-23.md'), help='Markdown report path to convert.')
+parser.add_argument('-o', '--output', help='Output PDF path. Defaults to the Markdown path with a .pdf suffix.')
+args = parser.parse_args()
+md_path = Path(args.markdown)
+if not md_path.is_absolute():
+    md_path = ROOT / md_path
+pdf_path = Path(args.output) if args.output else md_path.with_suffix('.pdf')
+if not pdf_path.is_absolute():
+    pdf_path = ROOT / pdf_path
 text = md_path.read_text(encoding='utf-8')
 # Convert markdown table to readable bullets, strip table separators
 lines=[]
